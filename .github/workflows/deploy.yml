@@ -1,0 +1,51 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ dev, staging, prod ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      ENV_NAME: ${{ github.ref_name }}
+      AWS_REGION: us-east-1
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.24'
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: '1.12.2'
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Build Lambda
+      run: |
+        cd terraform/modules/url-shortener
+        GOOS=linux GOARCH=amd64 go build -o bootstrap main.go
+
+    - name: Terraform Init
+      run: |
+        cd terraform/environments/${ENV_NAME}
+        terraform init
+
+    - name: Terraform Apply
+      run: |
+        cd terraform/environments/${ENV_NAME}
+        terraform apply -auto-approve
+ 

@@ -1,0 +1,10 @@
+{
+  "httpMethod": "POST",
+  "path": "/shorten",
+  "pathParameters": null,
+  "queryStringParameters": null,
+  "headers": {
+    "Host": "<rest_api_url>"
+  },
+  "body": "{\"url\":\"https://www.github.com\"}"
+}

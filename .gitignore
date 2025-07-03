@@ -1,0 +1,6 @@
+.DS_Store
+*.terraform
+
+# Build artifacts
+*.zip
+bootstrap
