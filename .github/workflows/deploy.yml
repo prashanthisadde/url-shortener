@@ -48,4 +48,3 @@ jobs:
       run: |
         cd terraform/environments/${ENV_NAME}
         terraform apply -auto-approve
- 
